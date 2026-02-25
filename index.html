@@ -413,14 +413,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;heigh
     <div class="pscroll">
       <div class="sec"><label class="label">Script (from Stage 1)</label><textarea class="textarea" id="vo-script" rows="5" style="font-size:.79rem"></textarea></div>
       <div class="divider"></div>
-      <label class="label">Voice</label>
+      <!-- ElevenLabs API Key -->
+      <div class="sec" id="el-key-sec">
+        <label class="label">ElevenLabs API Key</label>
+        <div style="display:flex;gap:6px">
+          <input class="inp" id="el-api-key" type="password" placeholder="sk_..." style="flex:1;font-family:'DM Mono',monospace;font-size:.75rem">
+          <button class="tbtn" onclick="saveELKey()" style="flex-shrink:0">Save</button>
+        </div>
+        <div id="el-key-status" style="font-size:.68rem;margin-top:5px;color:var(--m)">Enter your ElevenLabs API key — free at elevenlabs.io</div>
+      </div>
+      <div class="divider"></div>
+      <label class="label">Voice — Male Narrators</label>
       <div class="vcgrid">
-        <div class="vc on" onclick="selVoice(this,'Brian')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#1a3000,#0a1800)">🎤</div><div><div class="vc-name">Brian</div><div class="vc-meta">Deep · Auth</div></div></div><div class="vc-tags2"><div class="vc-tag">Male</div></div></div>
-        <div class="vc" onclick="selVoice(this,'Amy')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#2a0a2e,#180018)">🎤</div><div><div class="vc-name">Amy</div><div class="vc-meta">Warm · British</div></div></div><div class="vc-tags2"><div class="vc-tag">Female</div></div></div>
-        <div class="vc" onclick="selVoice(this,'Matthew')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#001a3a,#000a1a)">🎤</div><div><div class="vc-name">Matthew</div><div class="vc-meta">Smooth · Pro</div></div></div><div class="vc-tags2"><div class="vc-tag">Male</div></div></div>
-        <div class="vc" onclick="selVoice(this,'Joanna')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#2a1200,#180800)">🎤</div><div><div class="vc-name">Joanna</div><div class="vc-meta">Clear · Engaging</div></div></div><div class="vc-tags2"><div class="vc-tag">Female</div></div></div>
-        <div class="vc" onclick="selVoice(this,'Russell')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#2a0a0a,#180000)">🎤</div><div><div class="vc-name">Russell</div><div class="vc-meta">Warm · Aussie</div></div></div><div class="vc-tags2"><div class="vc-tag">Male</div></div></div>
-        <div class="vc" onclick="selVoice(this,'Salli')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#1a2a00,#0a1600)">🎤</div><div><div class="vc-name">Salli</div><div class="vc-meta">News · Confident</div></div></div><div class="vc-tags2"><div class="vc-tag">Female</div></div></div>
+        <div class="vc on" onclick="selVoice(this,'pNInz6obpgDQGcFmaJgB')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#1a3000,#0a1800)">🎙</div><div><div class="vc-name">Adam</div><div class="vc-meta">Deep · Authoritative</div></div></div><div class="vc-tags2"><div class="vc-tag">Narrator</div></div></div>
+        <div class="vc" onclick="selVoice(this,'ErXwobaYiN019PkySvjV')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#001a3a,#000a1a)">🎙</div><div><div class="vc-name">Antoni</div><div class="vc-meta">Warm · Storyteller</div></div></div><div class="vc-tags2"><div class="vc-tag">Narrator</div></div></div>
+        <div class="vc" onclick="selVoice(this,'VR6AewLTigWG4xSOukaG')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#2a0800,#150300)">🎙</div><div><div class="vc-name">Arnold</div><div class="vc-meta">Grounded · Cinematic</div></div></div><div class="vc-tags2"><div class="vc-tag">Drama</div></div></div>
+        <div class="vc" onclick="selVoice(this,'TxGEqnHWrfWFTfGW9XjX')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#001a14,#00080a)">🎙</div><div><div class="vc-name">Josh</div><div class="vc-meta">Confident · Engaging</div></div></div><div class="vc-tags2"><div class="vc-tag">Narrator</div></div></div>
+        <div class="vc" onclick="selVoice(this,'yoZ06aMxZJJ28mfd3POQ')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#1a1000,#0a0800)">🎙</div><div><div class="vc-name">Sam</div><div class="vc-meta">Raspy · Dramatic</div></div></div><div class="vc-tags2"><div class="vc-tag">Drama</div></div></div>
+        <div class="vc" onclick="selVoice(this,'onwK4e9ZLuTAKqWW03F9')"><div class="vc-dot"></div><div class="vc-top"><div class="vc-av" style="background:linear-gradient(135deg,#0a001a,#050010)">🎙</div><div><div class="vc-name">Daniel</div><div class="vc-meta">British · Documentary</div></div></div><div class="vc-tags2"><div class="vc-tag">British</div></div></div>
       </div>
       <div class="divider"></div>
       <div class="sec">
@@ -975,64 +985,123 @@ function chunkText(text, maxChars=2900){
   return chunks;
 }
 
-async function fetchTTSChunk(voice, text){
-  const url=`https://api.streamelements.com/kappa/v2/speech?voice=${voice}&text=${encodeURIComponent(text)}`;
-  const res=await fetch(url);
-  if(!res.ok) throw new Error('TTS API '+res.status);
-  const blob=await res.blob();
-  if(blob.size<500) throw new Error('Empty chunk');
-  return blob.arrayBuffer();
+// ══════════════════════════════════════════════
+// ELEVENLABS TTS ENGINE
+// ══════════════════════════════════════════════
+const EL_VOICES = {
+  'pNInz6obpgDQGcFmaJgB': 'Adam',
+  'ErXwobaYiN019PkySvjV': 'Antoni',
+  'VR6AewLTigWG4xSOukaG': 'Arnold',
+  'TxGEqnHWrfWFTfGW9XjX': 'Josh',
+  'yoZ06aMxZJJ28mfd3POQ': 'Sam',
+  'onwK4e9ZLuTAKqWW03F9': 'Daniel',
+};
+
+function saveELKey() {
+  const key = document.getElementById('el-api-key').value.trim();
+  if(!key){ toast('Paste your API key first','err'); return; }
+  localStorage.setItem('el_api_key', key);
+  document.getElementById('el-key-status').textContent = '✓ Key saved';
+  document.getElementById('el-key-status').style.color = 'var(--ok)';
+  toast('ElevenLabs key saved ✓','ok');
 }
 
-function concatBuffers(buffers){
-  const total = buffers.reduce((s,b)=>s+b.byteLength,0);
-  const out = new Uint8Array(total);
-  let off=0;
-  for(const b of buffers){out.set(new Uint8Array(b),off);off+=b.byteLength;}
-  return out.buffer;
+function getELKey() {
+  return localStorage.getItem('el_api_key') || document.getElementById('el-api-key').value.trim();
 }
 
-async function generateVoiceover(){
-  const text=(document.getElementById('vo-script').value||G.scriptText||'').trim();
-  if(!text){toast('No script — complete Stage 1 first!','err');return;}
+// Load saved key on page load
+function initELKey() {
+  const saved = localStorage.getItem('el_api_key');
+  if(saved) {
+    document.getElementById('el-api-key').value = saved;
+    document.getElementById('el-key-status').textContent = '✓ Key loaded';
+    document.getElementById('el-key-status').style.color = 'var(--ok)';
+  }
+}
+
+async function generateVoiceover() {
+  const text = (document.getElementById('vo-script').value || G.scriptText || '').trim();
+  if(!text){ toast('No script — complete Stage 1 first!','err'); return; }
+
+  const apiKey = getELKey();
+  if(!apiKey){ toast('Add your ElevenLabs API key first','err'); document.getElementById('el-api-key').focus(); return; }
 
   setBL('s2btn','s2spin','s2icon','s2txt','Generating...',true);
   document.getElementById('wv-ph').style.display='flex';
-  audio.pause();audio.src='';
-  if(G.audioUrl)URL.revokeObjectURL(G.audioUrl);
-  G.audioBlob=null;G.audioUrl=null;
+  audio.pause(); audio.src='';
+  if(G.audioUrl) URL.revokeObjectURL(G.audioUrl);
+  G.audioBlob=null; G.audioUrl=null;
   document.getElementById('vo-pfill').style.width='0%';
   document.getElementById('vo-play').disabled=true;
 
-  try{
-    const chunks = chunkText(text, 2900);
+  const voiceId = G.voice || 'pNInz6obpgDQGcFmaJgB';
+  const voiceName = EL_VOICES[voiceId] || voiceId;
+  const rate = parseFloat(document.getElementById('vo-rate').value) || 0.95;
+  // ElevenLabs stability/similarity settings
+  const stability = Math.max(0, Math.min(1, 1.5 - rate)); // slower = more stable
+  const similarity = 0.80;
+
+  try {
+    // Split into chunks to handle long scripts (ElevenLabs max ~5000 chars per call)
+    const chunks = chunkText(text, 4800);
     const totalChunks = chunks.length;
-    const buffers=[];
-    for(let i=0;i<totalChunks;i++){
-      if(totalChunks>1) document.getElementById('s2txt').textContent=`Part ${i+1}/${totalChunks}…`;
-      buffers.push(await fetchTTSChunk(G.voice, chunks[i]));
+    const blobs = [];
+
+    for(let i = 0; i < totalChunks; i++) {
+      if(totalChunks > 1) document.getElementById('s2txt').textContent = `Part ${i+1}/${totalChunks}…`;
+
+      const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': apiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg',
+        },
+        body: JSON.stringify({
+          text: chunks[i],
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: { stability, similarity_boost: similarity }
+        })
+      });
+
+      if(res.status === 401) throw new Error('Invalid API key — check your ElevenLabs key');
+      if(res.status === 429) throw new Error('Rate limit hit — wait a moment and try again');
+      if(!res.ok) { const e = await res.text(); throw new Error(`ElevenLabs ${res.status}: ${e}`); }
+
+      const blob = await res.blob();
+      if(blob.size < 500) throw new Error('Empty audio returned');
+      blobs.push(blob);
     }
-    const finalBuffer = totalChunks===1 ? buffers[0] : concatBuffers(buffers);
-    const blob = new Blob([finalBuffer],{type:'audio/mpeg'});
-    G.audioBlob=blob;G.audioUrl=URL.createObjectURL(blob);
-    audio.src=G.audioUrl;
-    await new Promise((ok,fail)=>{audio.onloadedmetadata=ok;audio.onerror=fail;setTimeout(fail,8000);});
-    const dur=audio.duration,wds=text.split(/\s+/).length;
-    document.getElementById('vstat-dur').textContent=ft(dur);
-    document.getElementById('vstat-wds').textContent=wds.toLocaleString();
-    document.getElementById('vstat-voice').textContent=G.voice;
-    document.getElementById('vo-tot').textContent=ft(dur);
-    document.getElementById('vo-pname').textContent=`${G.voice} — ready${totalChunks>1?' ('+totalChunks+' parts merged)':''}`;
-    document.getElementById('vo-play').disabled=false;
-    document.getElementById('vo-dl').style.display='block';
-    document.getElementById('s2next').style.display='block';
-    document.getElementById('wv-ph').style.display='none';
-    document.getElementById('s2pill').className='pill ok';document.getElementById('s2pill').textContent='✓ Ready';
-    document.getElementById('st-au').textContent=G.voice;
-    markDone(2); await drawWaveform(blob);
-    const partNote = totalChunks>1 ? ` · ${totalChunks} parts merged` : '';
-    toast(`Voiceover ready! ${ft(dur)} · ${wds} words${partNote} ✨`,'ok');
-  }catch(e){toast('TTS failed: '+e.message,'err');document.getElementById('wv-ph').style.display='flex';}
+
+    // Merge all chunks into one blob
+    const finalBlob = blobs.length === 1 ? blobs[0] : new Blob(blobs, { type: 'audio/mpeg' });
+    G.audioBlob = finalBlob;
+    G.audioUrl = URL.createObjectURL(finalBlob);
+    audio.src = G.audioUrl;
+    await new Promise((ok,fail) => { audio.onloadedmetadata=ok; audio.onerror=fail; setTimeout(ok,5000); });
+
+    const dur = audio.duration || 0;
+    const wds = text.split(/\s+/).length;
+    document.getElementById('vstat-dur').textContent = ft(dur);
+    document.getElementById('vstat-wds').textContent = wds.toLocaleString();
+    document.getElementById('vstat-voice').textContent = voiceName;
+    document.getElementById('vo-tot').textContent = ft(dur);
+    document.getElementById('vo-pname').textContent = `${voiceName} — ready${totalChunks>1?' ('+totalChunks+' parts)':''}`;
+    document.getElementById('vo-play').disabled = false;
+    document.getElementById('vo-dl').style.display = 'block';
+    document.getElementById('s2next').style.display = 'block';
+    document.getElementById('wv-ph').style.display = 'none';
+    document.getElementById('s2pill').className='pill ok'; document.getElementById('s2pill').textContent='✓ Ready';
+    document.getElementById('st-au').textContent = voiceName;
+    markDone(2);
+    await drawWaveform(finalBlob);
+    toast(`Voiceover ready! ${ft(dur)} · ${wds} words · ${voiceName} ✨`,'ok');
+
+  } catch(e) {
+    toast('TTS failed: ' + e.message, 'err');
+    document.getElementById('wv-ph').style.display='flex';
+  }
   setBL('s2btn','s2spin','s2icon','s2txt','Regenerate',false);
 }
 
@@ -1881,6 +1950,7 @@ goStage(1);
 buildTLayoutGrid();
 document.getElementById('s1').classList.add('active');
 document.getElementById('ps1').classList.add('active');
+initELKey();
 toast('StoryScript AI ready — start with Stage 1 ✍️','info');
 </script>
 </body>
