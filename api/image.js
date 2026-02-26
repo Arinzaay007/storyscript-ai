@@ -10,17 +10,17 @@ export default async function handler(req, res) {
 
   try {
     const query = encodeURIComponent(prompt);
-    const url = `https://api.unsplash.com/search/photos?query=${query}&orientation=landscape&per_page=1&client_id=${process.env.UNSPLASH_ACCESS_KEY}`;
+    const r = await fetch(
+      `https://api.pexels.com/v1/search?query=${query}&orientation=landscape&per_page=1`,
+      { headers: { Authorization: process.env.PEXELS_API_KEY } }
+    );
 
-    const r = await fetch(url);
     const data = await r.json();
+    if (!r.ok) throw new Error(`Pexels error: ${r.status}`);
 
-    if (!r.ok) throw new Error(`Unsplash error: ${r.status}`);
+    const imgUrl = data?.photos?.[0]?.src?.large2x || data?.photos?.[0]?.src?.large;
+    if (!imgUrl) throw new Error('No image found for: ' + prompt);
 
-    const imgUrl = data?.results?.[0]?.urls?.regular;
-    if (!imgUrl) throw new Error('No image found');
-
-    // Just return the URL — let browser load it directly
     return res.status(200).json({ url: imgUrl });
 
   } catch (err) {
