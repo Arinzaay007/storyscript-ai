@@ -10,16 +10,20 @@ export default async function handler(req, res) {
 
   try {
     const query = encodeURIComponent(prompt);
-    const url = `https://api.unsplash.com/photos/random?query=${query}&orientation=landscape&client_id=${process.env.UNSPLASH_ACCESS_KEY}`;
+    const url = `https://api.unsplash.com/search/photos?query=${query}&orientation=landscape&per_page=1&client_id=${process.env.UNSPLASH_ACCESS_KEY}`;
 
     const r = await fetch(url);
-    if (!r.ok) throw new Error(`Unsplash error: ${r.status}`);
-
     const data = await r.json();
-    const imgUrl = data?.urls?.regular || data?.urls?.full;
-    if (!imgUrl) throw new Error('No image returned');
 
-    // Fetch the actual image and pipe it through
+    if (!r.ok) {
+      console.error('Unsplash response:', data);
+      throw new Error(`Unsplash error: ${r.status} - ${JSON.stringify(data)}`);
+    }
+
+    const imgUrl = data?.results?.[0]?.urls?.regular;
+    if (!imgUrl) throw new Error('No image found for: ' + prompt);
+
+    // Fetch and pipe the image through
     const imgRes = await fetch(imgUrl);
     const buffer = await imgRes.arrayBuffer();
     res.setHeader('Content-Type', 'image/jpeg');
