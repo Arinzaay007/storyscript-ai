@@ -1373,20 +1373,54 @@ async function startRender(){
   cancelAnimationFrame(V.prevAnimId);cancelAnimationFrame(V.animId);
   initPtcl(getTheme());setRUI(true);
   document.getElementById('done-ov').classList.remove('show');
+
+  // Set up audio capture using the existing audio element
   let audioTrack=null;
-  if(G.audioUrl){try{const ac=new(window.AudioContext||window.webkitAudioContext)();const ael=new Audio(G.audioUrl);ael.crossOrigin='anonymous';const src=ac.createMediaElementSource(ael);const dest=ac.createMediaStreamDestination();src.connect(dest);
-    // Hook in music bed
-    await setupMusicForRender(ac, dest.stream.getAudioTracks().length ? ac.destination : dest);
-    audioTrack=dest.stream.getAudioTracks()[0];ael.play().catch(()=>{});}catch(e){}}
-  const cs=vc3.captureStream(30);if(audioTrack)cs.addTrack(audioTrack);
+  if(G.audioUrl){
+    try{
+      const ac=new(window.AudioContext||window.webkitAudioContext)();
+      // Use the existing audio element directly
+      audio.currentTime=0;
+      const src=ac.createMediaElementSource(audio);
+      const dest=ac.createMediaStreamDestination();
+      src.connect(dest);
+      src.connect(ac.destination); // also play through speakers
+      audioTrack=dest.stream.getAudioTracks()[0];
+      audio.play().catch(e=>console.warn('Audio play failed:',e));
+    }catch(e){
+      // Fallback: capture stream from audio element directly
+      try{
+        audio.currentTime=0;
+        const stream=audio.captureStream?audio.captureStream():audio.mozCaptureStream?.();
+        if(stream) audioTrack=stream.getAudioTracks()[0];
+        audio.play().catch(()=>{});
+      }catch(e2){console.warn('Audio capture failed:',e2);}
+    }
+  }
+
+  const cs=vc3.captureStream(30);
+  if(audioTrack) cs.addTrack(audioTrack);
   const mime=['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m))||'video/webm';
   V.mediaRecorder=new MediaRecorder(cs,{mimeType:mime,videoBitsPerSecond:5_000_000});
   V.mediaRecorder.ondataavailable=e=>{if(e.data.size>0)V.chunks.push(e.data);};
   V.mediaRecorder.onstop=finalizeWebM;V.mediaRecorder.start(80);
+
   let si=0,sp=0,lt=null,frame=0;
   const totalF=V.scenes.reduce((a,s)=>a+Math.ceil(s.dur*30),0);
-  function loop(ts){if(!V.isRendering)return;if(!lt)lt=ts;const dt=Math.min((ts-lt)/1000,.05);lt=ts;const sc=V.scenes[si];if(!sc){stopRender();return;}sp+=dt/sc.dur;frame++;renderVFrame(ctx3,si,Math.min(sp,1));if(sp>=1){si++;sp=0;if(si>=V.scenes.length){stopRender();return;}}const pct=Math.min(100,(frame/Math.max(totalF,1))*100);setVProg(pct,`Scene ${si+1}/${V.scenes.length} · ${pct.toFixed(0)}%`,frame);V.animId=requestAnimationFrame(loop);}
-  V.animId=requestAnimationFrame(loop);toast('Rendering at 30fps...','info');
+  function loop(ts){
+    if(!V.isRendering)return;
+    if(!lt)lt=ts;
+    const dt=Math.min((ts-lt)/1000,.05);lt=ts;
+    const sc=V.scenes[si];if(!sc){stopRender();return;}
+    sp+=dt/sc.dur;frame++;
+    renderVFrame(ctx3,si,Math.min(sp,1));
+    if(sp>=1){si++;sp=0;if(si>=V.scenes.length){stopRender();return;}}
+    const pct=Math.min(100,(frame/Math.max(totalF,1))*100);
+    setVProg(pct,`Scene ${si+1}/${V.scenes.length} · ${pct.toFixed(0)}%`,frame);
+    V.animId=requestAnimationFrame(loop);
+  }
+  V.animId=requestAnimationFrame(loop);
+  toast('Rendering with audio at 30fps...','info');
 }
 function stopRender(){V.isRendering=false;cancelAnimationFrame(V.animId);if(V.mediaRecorder&&V.mediaRecorder.state!=='inactive')V.mediaRecorder.stop();else resetRUI();}
 function finalizeWebM(){V.webmBlob=new Blob(V.chunks,{type:'video/webm'});const sz=fmtB(V.webmBlob.size);document.getElementById('st-sz').textContent=sz;document.getElementById('done-sub').textContent=`${ft(V.totalDur)} · ${sz}`;document.getElementById('done-ov').classList.add('show');document.getElementById('exp-webm').disabled=false;document.getElementById('exp-mp4').disabled=false;resetRUI();setVProg(100,'Render complete ✓');document.getElementById('st-dot').className='sd g';document.getElementById('st-st').textContent='Done';markDone(3);toast(`Video ready! ${sz} 🎬`,'ok');}
