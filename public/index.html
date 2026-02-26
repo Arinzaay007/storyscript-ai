@@ -1289,7 +1289,7 @@ function parseScenes(){
   genCaps();updateSceneUI();updateVStat();
   // Auto-fetch 2D illustrations for all scenes
   toast(`Generating ${V.scenes.length} illustrations...`,'info');
-  V.scenes.forEach((_,i)=>setTimeout(()=>fetchBroll(i),i*600));
+  V.scenes.forEach((_,i)=>setTimeout(()=>fetchBroll(i),i*1500));
 }
 
 function updateSceneUI(){
@@ -1343,7 +1343,7 @@ async function fetchAllBroll(){
   toast(`Fetching ${V.scenes.length} images from Unsplash...`,'info');
   for(let i=0;i<V.scenes.length;i++){
     await fetchBroll(i);
-    await new Promise(r=>setTimeout(r,300));
+    await new Promise(r=>setTimeout(r,1200));
   }
   toast('All images ready! 🎨','ok');
 }
