@@ -1319,13 +1319,49 @@ async function fetchBroll(idx){
   const btn=document.getElementById(`scb${idx}`);if(btn){btn.classList.add('loading');btn.textContent='⏳';}
   const scene=V.scenes[idx];if(!scene)return;
   const prompt=build3Prompt(scene.text);V.prompts[idx]=prompt;
-  try{const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&seed=${idx*137+42}&nologo=true&enhance=true&model=flux`;V.images[idx]=await loadImg(url);toast(`Scene ${idx+1} image ready ✨`,'ok');}
-  catch(e){const fc=document.createElement('canvas');fc.width=1280;fc.height=720;const fctx=fc.getContext('2d');const ps=[['#0a1520','#000a18'],['#0d0820','#050010'],['#1a0800','#0a0000'],['#001a14','#00080a']];const[c1,c2]=ps[idx%ps.length];const g=fctx.createLinearGradient(0,0,1280,720);g.addColorStop(0,c1);g.addColorStop(1,c2);fctx.fillStyle=g;fctx.fillRect(0,0,1280,720);for(let i=0;i<5000;i++){fctx.fillStyle=`rgba(255,255,255,${Math.random()*.025})`;fctx.fillRect(Math.random()*1280,Math.random()*720,1,1);}const fi=new Image();fi.src=fc.toDataURL();V.images[idx]=fi;}
+  try{
+    const url=`/api/image?prompt=${encodeURIComponent(prompt)}`;
+    V.images[idx]=await loadImg(url);
+    toast(`Scene ${idx+1} ready ✨`,'ok');
+  } catch(e){
+    // fallback: solid gradient canvas
+    const fc=document.createElement('canvas');fc.width=1280;fc.height=720;
+    const fctx=fc.getContext('2d');
+    const ps=[['#0a1520','#000a18'],['#0d0820','#050010'],['#1a0800','#0a0000'],['#001a14','#00080a']];
+    const[c1,c2]=ps[idx%ps.length];
+    const g=fctx.createLinearGradient(0,0,1280,720);g.addColorStop(0,c1);g.addColorStop(1,c2);
+    fctx.fillStyle=g;fctx.fillRect(0,0,1280,720);
+    const fi=new Image();fi.src=fc.toDataURL();V.images[idx]=fi;
+    toast(`Scene ${idx+1} used fallback`,'info');
+  }
   if(btn){btn.classList.remove('loading');btn.textContent='🔄';}
   updateSceneUI();rfrC();
 }
-async function fetchAllBroll(){if(!V.scenes.length){toast('Parse scenes first','err');return;}toast(`Generating ${V.scenes.length} AI images...`,'info');for(let i=0;i<V.scenes.length;i++){await fetchBroll(i);await new Promise(r=>setTimeout(r,700));}toast('All images ready! 🎨','ok');}
-function upBroll(idx){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=async()=>{const f=inp.files[0];if(!f)return;try{V.images[idx]=await loadImg(URL.createObjectURL(f));updateSceneUI();rfrC();toast(`Scene ${idx+1} uploaded ✓`,'ok');}catch(e){toast('Load failed','err');}};inp.click();}
+
+async function fetchAllBroll(){
+  if(!V.scenes.length){toast('No scenes yet','err');return;}
+  toast(`Fetching ${V.scenes.length} images from Unsplash...`,'info');
+  for(let i=0;i<V.scenes.length;i++){
+    await fetchBroll(i);
+    await new Promise(r=>setTimeout(r,300));
+  }
+  toast('All images ready! 🎨','ok');
+}
+
+function upBroll(idx){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';
+  inp.onchange=async()=>{
+    const f=inp.files[0];if(!f)return;
+    try{
+      V.images[idx]=await loadImg(URL.createObjectURL(f));
+      updateSceneUI();rfrC();
+      toast(`Scene ${idx+1} uploaded ✓`,'ok');
+    }catch(e){toast('Load failed','err');}
+  };
+  inp.click();
+}
+
 function clrBroll(idx){delete V.images[idx];delete V.prompts[idx];updateSceneUI();rfrC();}
 
 // Render engine
@@ -1510,7 +1546,7 @@ async function genAIBG(){
   const raw=topic.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(w=>w.length>3&&!TSTOPS.has(w));
   const exp=raw.map(w=>TVISUALS[w]||'').find(v=>v)||raw.slice(0,3).join(' ')||'success wealth drama';
   const prompt=`${exp}, ${TSTYLES[style]||TSTYLES.Cinematic}, no text no words, landscape 16:9`;
-  try{T.bgImage=await loadImg(`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&seed=${Math.floor(Math.random()*9999)+1}&nologo=true&enhance=true&model=flux`);document.getElementById('th-bg-status').textContent='AI Generated ✓';toast('AI background ready! ✨','ok');}
+  try{T.bgImage=await loadImg(`/api/image?prompt=${encodeURIComponent(prompt)}`);document.getElementById('th-bg-status').textContent='Photo loaded ✓';toast('Background photo ready! ✨','ok');}
   catch(e){T.bgImage=null;document.getElementById('th-bg-status').textContent='Gradient (fallback)';toast('Generation failed — gradient fallback','info');}
   document.getElementById('shimmer').classList.remove('show');
   setBL('aibg-btn','aibg-spin','aibg-icon','aibg-txt','Regenerate AI Background',false);
