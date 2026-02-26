@@ -1320,8 +1320,10 @@ async function fetchBroll(idx){
   const scene=V.scenes[idx];if(!scene)return;
   const prompt=build3Prompt(scene.text);V.prompts[idx]=prompt;
   try{
-    const url=`/api/image?prompt=${encodeURIComponent(prompt)}`;
-    V.images[idx]=await loadImg(url);
+    const r=await fetch(`/api/image?prompt=${encodeURIComponent(prompt)}`);
+    const data=await r.json();
+    if(!data.url) throw new Error('No URL returned');
+    V.images[idx]=await loadImg(data.url);
     toast(`Scene ${idx+1} ready ✨`,'ok');
   } catch(e){
     // fallback: solid gradient canvas
@@ -1546,7 +1548,14 @@ async function genAIBG(){
   const raw=topic.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/).filter(w=>w.length>3&&!TSTOPS.has(w));
   const exp=raw.map(w=>TVISUALS[w]||'').find(v=>v)||raw.slice(0,3).join(' ')||'success wealth drama';
   const prompt=`${exp}, ${TSTYLES[style]||TSTYLES.Cinematic}, no text no words, landscape 16:9`;
-  try{T.bgImage=await loadImg(`/api/image?prompt=${encodeURIComponent(prompt)}`);document.getElementById('th-bg-status').textContent='Photo loaded ✓';toast('Background photo ready! ✨','ok');}
+  try{
+    const r=await fetch(`/api/image?prompt=${encodeURIComponent(prompt)}`);
+    const data=await r.json();
+    if(!data.url) throw new Error('No URL');
+    T.bgImage=await loadImg(data.url);
+    document.getElementById('th-bg-status').textContent='Photo loaded ✓';
+    toast('Background photo ready! ✨','ok');
+  }
   catch(e){T.bgImage=null;document.getElementById('th-bg-status').textContent='Gradient (fallback)';toast('Generation failed — gradient fallback','info');}
   document.getElementById('shimmer').classList.remove('show');
   setBL('aibg-btn','aibg-spin','aibg-icon','aibg-txt','Regenerate AI Background',false);
