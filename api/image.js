@@ -5,15 +5,22 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const { prompt, seed } = req.query;
+  const { prompt } = req.query;
   if (!prompt) return res.status(400).json({ error: 'Missing prompt' });
 
   try {
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1280&height=720&seed=${seed||Math.floor(Math.random()*9999)}&nologo=true&model=flux`;
-    
-    const imgRes = await fetch(url);
-    if (!imgRes.ok) throw new Error(`Pollinations error: ${imgRes.status}`);
+    const query = encodeURIComponent(prompt);
+    const url = `https://api.unsplash.com/photos/random?query=${query}&orientation=landscape&client_id=${process.env.UNSPLASH_ACCESS_KEY}`;
 
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`Unsplash error: ${r.status}`);
+
+    const data = await r.json();
+    const imgUrl = data?.urls?.regular || data?.urls?.full;
+    if (!imgUrl) throw new Error('No image returned');
+
+    // Fetch the actual image and pipe it through
+    const imgRes = await fetch(imgUrl);
     const buffer = await imgRes.arrayBuffer();
     res.setHeader('Content-Type', 'image/jpeg');
     res.setHeader('Cache-Control', 'public, max-age=86400');
