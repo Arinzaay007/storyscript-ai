@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         'X-Title': 'StoryScript AI'
       },
       body: JSON.stringify({
-        model: 'google/gemma-3-4b-it:free',
+        model: 'stepfun/step-3.5-flash:free',
         max_tokens: max_tokens || 1400,
         messages: messages
       })
