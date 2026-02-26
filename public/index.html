@@ -1147,16 +1147,13 @@ const TOPICV={'money':'gold coins wealth abundance','wealth':'luxury penthouse c
 const STYLES3={cinematic:'cinematic photography, anamorphic lens, dramatic color grade, 4K',illustration:'digital illustration, concept art, artstation, vibrant',abstract:'abstract expressionism, bold geometry, vibrant palette',dark:'dark noir photography, deep shadows, cinematic tension','Nature Epic':'epic nature photography, golden hour, dramatic sky'};
 
 function build3Prompt(text){
-  const raw=text.toLowerCase().replace(/[^a-z\s]/g,' ').split(/\s+/);
-  const words=raw.filter(w=>w.length>3&&!STOPS3.has(w));
-  const scored=words.map(w=>{let sc=1;if(TOPICV[w])sc+=10;for(const k of Object.keys(TOPICV)){if(w.includes(k)||k.includes(w)){sc+=4;break;}}sc+=Math.min(w.length-3,4);return{w,sc};});
-  scored.sort((a,b)=>b.sc-a.sc);
-  const seen=new Set(),top=scored.filter(x=>{if(seen.has(x.w))return false;seen.add(x.w);return true;}).slice(0,4).map(x=>x.w);
-  let exp='';for(const w of top){if(TOPICV[w]){exp=TOPICV[w];break;}for(const[k,v]of Object.entries(TOPICV)){if(w.includes(k)||k.includes(w)){exp=v;break;}}}
-  const subj=exp||top.join(' ')||'dramatic scene';
-  const style=document.querySelector('#vid-theme .tag.on')?.textContent||'Dark Cinema';
-  const stylePrompt='2D illustration, cartoon art style, flat design, vibrant colors, digital art, concept art, no text, no words, no letters';
-  return[subj,stylePrompt,'wide landscape 16:9'].join(', ');
+  // Use the actual scene text directly — strip filler words and keep meaningful content
+  const clean=text.replace(/[^a-zA-Z0-9\s]/g,' ').trim();
+  const stopwords=new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','is','are','was','were','be','been','this','that','it','they','we','you','i','have','do','will','not','so','as','by','from','about','than','when','who','what','how','if','can','just','all','more','most','some','any','also','very','get','let','us','them','back','out','into','over','after','such','each','every','many','much','here','there','their','our','your','its','has','had','would','could','should','did','does','then','now','up','down','one','two','three','four','five','going','come','came','take','make','made','know','think','see','look','want','give','use','find','tell','say','said','need','feel','felt','keep','put','set','show','try','call','ask','seem','turn','move','live','play','run','help','talk','work','start','end']);
+  const keywords=clean.split(/\s+/).filter(w=>w.length>3&&!stopwords.has(w.toLowerCase())).slice(0,6).join(' ');
+  const subject=keywords||clean.slice(0,60);
+  const stylePrompt='2D cartoon illustration, colorful flat design, vibrant, digital art, no text, no words, no letters, wide landscape';
+  return`${subject}, ${stylePrompt}`;
 }
 
 function initPtcl(theme){V.particles=[];if(!theme.ptcl)return;for(let i=0;i<65;i++)V.particles.push({x:Math.random()*1280,y:Math.random()*720,r:Math.random()*1.4+.4,vx:(Math.random()-.5)*.28,vy:-Math.random()*.32-.07,a:Math.random()*.5+.15});}
