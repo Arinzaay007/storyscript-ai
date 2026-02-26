@@ -8,28 +8,30 @@ export default async function handler(req, res) {
 
   try {
     const { messages, max_tokens } = req.body;
-    const userMessage = messages?.find(m => m.role === 'user')?.content || '';
 
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: userMessage }] }],
-          generationConfig: { maxOutputTokens: max_tokens || 1400 }
-        })
-      }
-    );
+    const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        'HTTP-Referer': 'https://storyscript-ai.vercel.app',
+        'X-Title': 'StoryScript AI'
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-3.1-8b-instruct:free',
+        max_tokens: max_tokens || 1400,
+        messages: messages
+      })
+    });
 
-    const data = await geminiRes.json();
+    const data = await orRes.json();
 
-    if (!geminiRes.ok) {
-      console.error('Gemini error:', data);
-      return res.status(geminiRes.status).json({ error: data.error?.message || 'Gemini error' });
+    if (!orRes.ok) {
+      console.error('OpenRouter error:', data);
+      return res.status(orRes.status).json({ error: data.error?.message || 'OpenRouter error' });
     }
 
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const text = data.choices?.[0]?.message?.content || '';
     return res.status(200).json({ content: [{ type: 'text', text }] });
 
   } catch (err) {
