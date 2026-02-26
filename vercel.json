@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "api/*.js", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
-  ],
+  "functions": {
+    "api/*.js": {
+      "runtime": "@vercel/node"
+    }
+  },
   "routes": [
     { "src": "/api/anthropic", "dest": "/api/anthropic.js" },
     { "src": "/api/elevenlabs", "dest": "/api/elevenlabs.js" },
