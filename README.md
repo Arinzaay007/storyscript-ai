@@ -1,1 +1,0 @@
-# storyscript-ai
