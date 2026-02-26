@@ -15,20 +15,13 @@ export default async function handler(req, res) {
     const r = await fetch(url);
     const data = await r.json();
 
-    if (!r.ok) {
-      console.error('Unsplash response:', data);
-      throw new Error(`Unsplash error: ${r.status} - ${JSON.stringify(data)}`);
-    }
+    if (!r.ok) throw new Error(`Unsplash error: ${r.status}`);
 
     const imgUrl = data?.results?.[0]?.urls?.regular;
-    if (!imgUrl) throw new Error('No image found for: ' + prompt);
+    if (!imgUrl) throw new Error('No image found');
 
-    // Fetch and pipe the image through
-    const imgRes = await fetch(imgUrl);
-    const buffer = await imgRes.arrayBuffer();
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    return res.status(200).send(Buffer.from(buffer));
+    // Just return the URL — let browser load it directly
+    return res.status(200).json({ url: imgUrl });
 
   } catch (err) {
     console.error('Image proxy error:', err);
